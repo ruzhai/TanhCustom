@@ -1,7 +1,6 @@
 
 #include "../op_kernel/tanh_custom_tiling.h"
 #include "register/op_def_registry.h"
-#include <cstring>
 
 
 namespace optiling {
@@ -9,18 +8,12 @@ const uint32_t BLOCK_DIM = 8;
 const uint32_t TILE_NUM = 8;
 static ge::graphStatus TilingFunc(gert::TilingContext* context)
 {
-    TanhCustomTilingData tiling;
-    tiling.totalLength = static_cast<uint32_t>(context->GetInputShape(0)->GetOriginShape().GetShapeSize());
-    tiling.tileNum = TILE_NUM;
+    // 普通结构体的 tiling 用 GetTilingData 直接取指针，无需 SaveToBuffer
+    TanhCustomTilingData* tiling = context->GetTilingData<TanhCustomTilingData>();
+    tiling->totalLength = static_cast<uint32_t>(context->GetInputShape(0)->GetOriginShape().GetShapeSize());
+    tiling->tileNum = TILE_NUM;
 
     context->SetBlockDim(BLOCK_DIM);
-
-    auto rawTilingData = context->GetRawTilingData();
-    if (rawTilingData == nullptr || rawTilingData->GetCapacity() < sizeof(TanhCustomTilingData)) {
-        return ge::GRAPH_FAILED;
-    }
-    (void)memcpy(rawTilingData->GetData(), &tiling, sizeof(TanhCustomTilingData));
-    rawTilingData->SetDataSize(sizeof(TanhCustomTilingData));
 
     size_t* currentWorkspace = context->GetWorkspaceSizes(1);
     currentWorkspace[0] = 0;
