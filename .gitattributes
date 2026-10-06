@@ -1,0 +1,4 @@
+# 这个包只在 Linux（GitCode Notebook / 昇腾环境）上构建运行。
+# 强制 LF：否则 shell 脚本会被 checkout 成 CRLF，在 Linux 上报
+# "bad interpreter: /bin/bash^M"，且 C++ 头文件可能触发编译告警。
+* text=auto eol=lf

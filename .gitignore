@@ -1,0 +1,11 @@
+# Linux 构建产物：Windows 上没用，云环境会重新生成
+TanhCustom/AclNNInvocation/build/
+**/build_out/
+
+# 运行期数据
+TanhCustom/AclNNInvocation/input/*.bin
+TanhCustom/AclNNInvocation/output/*.bin
+
+# Python
+__pycache__/
+*.pyc
