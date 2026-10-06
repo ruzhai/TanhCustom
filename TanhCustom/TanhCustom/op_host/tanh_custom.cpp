@@ -15,8 +15,6 @@ static ge::graphStatus TilingFunc(gert::TilingContext* context)
 
     context->SetBlockDim(BLOCK_DIM);
 
-    size_t* currentWorkspace = context->GetWorkspaceSizes(1);
-    currentWorkspace[0] = 0;
     return ge::GRAPH_SUCCESS;
 }
 }
