@@ -8,15 +8,15 @@ public:
     __aicore__ inline KernelTanh() {}
     __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, uint32_t totalLength, uint32_t tileNum)
     {
-        ASSERT(GetBlockNum() != 0 && "block dim can not be zero!");
-        this->blockLength = totalLength / GetBlockNum();
+        ASSERT(AscendC::GetBlockNum() != 0 && "block dim can not be zero!");
+        this->blockLength = totalLength / AscendC::GetBlockNum();
         this->tileNum = tileNum;
         ASSERT(tileNum != 0 && "tile num can not be zero!");
         // Process() 每核共搬 tileNum * BUFFER_NUM 块，故单块长度需再除以 BUFFER_NUM
         this->tileLength = this->blockLength / tileNum / BUFFER_NUM;
 
-        xGm.SetGlobalBuffer((__gm__ DTYPE_X *)x + this->blockLength * GetBlockIdx(), this->blockLength);
-        yGm.SetGlobalBuffer((__gm__ DTYPE_Y *)y + this->blockLength * GetBlockIdx(), this->blockLength);
+        xGm.SetGlobalBuffer((__gm__ DTYPE_X *)x + this->blockLength * AscendC::GetBlockIdx(), this->blockLength);
+        yGm.SetGlobalBuffer((__gm__ DTYPE_Y *)y + this->blockLength * AscendC::GetBlockIdx(), this->blockLength);
         pipe.InitBuffer(inQueueX, BUFFER_NUM, this->tileLength * sizeof(DTYPE_X));
         pipe.InitBuffer(outQueueY, BUFFER_NUM, this->tileLength * sizeof(DTYPE_Y));
         // tanh 用 fp32 中间量算，避免 fp16 下 e^x 抵消带来的精度损失
