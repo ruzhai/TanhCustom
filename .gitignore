@@ -9,3 +9,6 @@ TanhCustom/AclNNInvocation/output/*.bin
 # Python
 __pycache__/
 *.pyc
+
+# 考试提交产物（由 git archive 生成，不入库）
+*.zip
