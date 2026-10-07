@@ -2,7 +2,11 @@
 
 基于昇腾 Ascend C 的自定义 `Tanh` 算子实现，采用 **Tiling 模板编程**：host 侧下发 tiling 参数，kernel 侧用纯 POD 结构体接收。
 
-已在 **Ascend 910B + CANN 9.0.0** 上完成端到端验证，精度校验通过。
+在 **Ascend 910B + CANN 9.0.0** 上跑通过端到端精度校验（`AclNNInvocation/run.sh` 输出 `INFO: you have passed the Precision!`）。
+
+> 那次运行的机器与日志没有随仓库保留，所以**这一条在仓库里无法复现**。
+> 仓库内能复现的验证是 [`local_test/simulate_tanh.py`](local_test/simulate_tanh.py) —— 不需要 NPU 与 CANN，
+> 复刻 host 侧分块逻辑与 kernel 侧算子，判据与 `verify_result.py` 一致。见文末「离线自测」。
 
 ---
 
@@ -47,7 +51,7 @@ TanhCustom/                        # 仓库根
 
 ## 环境要求
 
-- 昇腾 NPU（本工程在 **910B** 上验证）
+- 昇腾 NPU（本工程面向 **910B**）
 - **CANN 9.0.0**
 - Python 3 + `numpy`
 - `cmake` ≥ 3.16
