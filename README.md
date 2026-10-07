@@ -24,19 +24,21 @@ tanh(x) = (e^x - e^-x) / (e^x + e^-x)
 ## 目录结构
 
 ```
-TanhCustom/
-├── TanhCustom/                    # 算子工程：build.sh 从这里构建出 .run 安装包
-│   ├── CMakePresets.json          # ★ CANN 安装路径在这里配置
-│   ├── build.sh
-│   ├── framework/tf_plugin/       # TensorFlow 插件（脚手架自带，未改）
-│   ├── op_host/
-│   │   └── tanh_custom.cpp        # TilingFunc / InferShape / OpDef
-│   └── op_kernel/
-│       ├── tanh_custom.cpp        # KernelTanh：CopyIn → Compute → CopyOut
-│       └── tanh_custom_tiling.h   # Tiling 数据结构（host / kernel 共用）
-├── AclNNInvocation/               # aclnn 调用样例（脚手架自带，未改）
-│   ├── run.sh                     # 生成数据 → 编译 → 执行 → 比对
-│   └── scripts/gen_data.py        # 生成 input_x.bin 与 golden.bin
+TanhCustom/                        # 仓库根
+├── TanhCustom/                    # 考试包原目录，故有一层同名嵌套
+│   ├── AclNNInvocation/           # aclnn 调用样例（脚手架自带，未改）
+│   │   ├── run.sh                 # 生成数据 → 编译 → 执行 → 比对
+│   │   └── scripts/gen_data.py    # 生成 input_x.bin 与 golden.bin
+│   └── TanhCustom/                # 算子工程：build.sh 从这里构建出 .run 安装包
+│       ├── CMakePresets.json      # ★ CANN 安装路径在这里配置
+│       ├── build.sh
+│       ├── framework/tf_plugin/   # TensorFlow 插件（脚手架自带，未改）
+│       ├── op_host/
+│       │   └── tanh_custom.cpp    # TilingFunc / InferShape / OpDef
+│       └── op_kernel/
+│           ├── tanh_custom.cpp    # KernelTanh：CopyIn → Compute → CopyOut
+│           └── tanh_custom_tiling.h  # Tiling 数据结构（host / kernel 共用）
+├── LICENSE
 └── local_test/
     └── simulate_tanh.py           # 离线自测：无 NPU、无 CANN 也能跑
 ```
@@ -54,7 +56,7 @@ TanhCustom/
 
 ### 必改：CMakePresets.json 里的 CANN 路径
 
-`TanhCustom/CMakePresets.json` 中的 `ASCEND_CANN_PACKAGE_PATH` 必须指向**你本机 CANN 9.0.0 的实际安装位置**。`build.sh` 走的是 `cmake --preset=default`，这个值是唯一的配置入口，不会在命令行被覆盖。
+`TanhCustom/TanhCustom/CMakePresets.json` 中的 `ASCEND_CANN_PACKAGE_PATH` 必须指向**你本机 CANN 9.0.0 的实际安装位置**。`build.sh` 走的是 `cmake --preset=default`，这个值是唯一的配置入口，不会在命令行被覆盖。
 
 ```json
 "ASCEND_CANN_PACKAGE_PATH": { "type": "PATH", "value": "/path/to/your/cann-9.0.0" }
@@ -73,7 +75,7 @@ source <你的CANN路径>/set_env.sh
 **② 构建算子包**
 
 ```bash
-cd TanhCustom
+cd TanhCustom/TanhCustom
 bash build.sh
 ```
 
@@ -215,8 +217,14 @@ python local_test/simulate_tanh.py
 
 ## 许可证
 
-本工程基于华为昇腾 Ascend C 算子开发脚手架修改而来。
+本工程基于华为昇腾 Ascend C 算子开发脚手架修改而来。仓库内文件按来源分属不同条款，**不是单一许可证**：
 
-`op_host/CMakeLists.txt`、`op_kernel/CMakeLists.txt`、`framework/` 下的 `CMakeLists.txt` 保留原始版权头，适用 **CANN Open Software License Agreement Version 2.0**。
+| 文件 | 版权 | 条款 |
+|---|---|---|
+| `op_host/tanh_custom.cpp`、`op_kernel/tanh_custom.cpp` | 本仓库 | **Mulan PSL v2** —— 全文见根目录 [`LICENSE`](LICENSE) |
+| `op_kernel/tanh_custom_tiling.h`、`framework/tf_plugin/tensorflow_tanh_custom_plugin.cc` | 华为（MindStudio 模板） | Mulan PSL v2，文件头已声明 |
+| 各层 `CMakeLists.txt` | 华为 | CANN Open Software License Agreement Version 2.0 |
+| `AclNNInvocation/`（脚手架自带，未作修改） | 华为 | 文件头仅写 "All rights reserved"，未附授权条款 |
 
-算子实现部分（`op_host/tanh_custom.cpp`、`op_kernel/tanh_custom.cpp`、`op_kernel/tanh_custom_tiling.h`）为本仓库新增或修改。
+脚手架文件头里引用的 `LICENSE` 指的是 **CANN OSL 全文**（随 CANN 工具链分发，本仓库未附带，故该引用悬空）。
+根目录这份 `LICENSE` 是本仓库自己新增的 **Mulan PSL v2**，只覆盖上表第一行那两份源文件。
